@@ -1,5 +1,5 @@
 const { UTC_OFFSET, LOGIN } = require("./constants");
-const { startAt, bookableAt } = require("./utils");
+const { startAt, bookableAt, roundToTenths } = require("./utils");
 
 const nextWorkoutToBeBooked = {
   fulfilled: (workout) => {
@@ -11,11 +11,9 @@ const nextWorkoutToBeBooked = {
     console.log(
       `[AUTO BOOKING]\tNext workout at club ${
         workout.clubId
-      }, is bookable in: ${
-        Math.round(
-          (10 * (bookableAt(workout).getTime() - Date.now())) / (60 * 1000)
-        ) / 10
-      } minutes`
+      }, is bookable in: ${roundToTenths(
+        (bookableAt(workout).getTime() - Date.now()) / (60 * 1000)
+      )} minutes`
     );
   },
   rejected: (error) => {

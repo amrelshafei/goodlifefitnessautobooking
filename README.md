@@ -20,6 +20,7 @@ When executing the *program* either with **npm start** or by running one of the 
  - **Member login password**: Must be passed only when the stored login *cookies* are expired or when there are no stored *cookies* in the first place.
  - **Clubs**: Default club IDs are hardcoded inside the *program*. The chosen *clubs* can be changed by passing their IDs as integer values. *program* must at least have one club ID.
  - **Checkup interval**: Default checkup interval time is hardcoded inside the *program*. Checkups are executed 10 minutes (default) and a schedule is set for booking a workout if it's bookable during the checkup. 
+ - **Captcha-required flag**: Default value is hardcoded inside the *program*. If the *program* requires a Captcha too execute API actions, you need to pass this parameter as true (default is false). 
  - **Captcha wait interval**: Default Captcha wait interval time is hardcoded inside the *program*. If the *program* requires a Captcha too execute API actions, the *program* waits and checks if the Captcha token has been downloaded every 5 seconds (default). 
 
 Sample commands for executing the *program*:
@@ -32,14 +33,15 @@ All these parameters can also be provided to the *program* with **params.json** 
   "password": "abc123",
   "clubIds": [109, 276],
   "checkupInterval": 8,
-  "captchaInterval": 8,
+  "captchaRequired": true,
+  "captchaInterval": 8
 }
 ``` 
 
 ## **How to Auto-Book?**
 
- - Follow the installation guide up to `step 4` to set up the project. Finish the remaining steps if you intend to run the *program* with an executable.
- - If you followed upto `step 4` then the *program*'s working directory is the one with **package.json** file and if you have an executable then the the *program*'s working directory is the director of the executable.
+ - Follow the installation guide up to **step 4** to set up the project. Finish the remaining steps if you intend to run the *program* with an executable.
+ - If you followed upto **step 4** then the *program*'s working directory is the one with **package.json** file and if you have an executable then the the *program*'s working directory is the director of the executable.
  - In the working directory, create your **params.json** file with your password and atleast one club ID.
  - Run the program either with **npm start** or by running one of the executables for your machine.
 

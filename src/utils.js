@@ -11,6 +11,10 @@ function yyyymmdd(date) {
   return [year, month, day].join("-");
 }
 
+function roundToTenths(number) {
+  return Math.round(10 * number) / 10;
+}
+
 function parseCookie(str) {
   return str
     .split(";")
@@ -67,6 +71,7 @@ function bookableAt(workout) {
 
 module.exports = {
   yyyymmdd,
+  roundToTenths,
   parseCookie,
   readJson,
   writeJson,
