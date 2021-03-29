@@ -22,7 +22,6 @@ function scheduleNextBooking(clubId, cookies, callback = (booking) => {}) {
           "[CAPTCHA]\tLast Captcha token in HAR file has been used (file will be deleted)"
         );
         setTimeout(function () {
-          fs.unlinkSync("./www.goodlifefitness.com.har");
           console.log(
             `[CAPTCHA]\tPlease download HAR file in working directory within the next ${Math.round(
               (bookableAt(workout).getTime() - Date.now()) / 1000
@@ -35,6 +34,9 @@ function scheduleNextBooking(clubId, cookies, callback = (booking) => {}) {
         const token = fs.existsSync("./www.goodlifefitness.com.har")
           ? readLastCaptchaToken("./www.goodlifefitness.com.har")
           : undefined;
+        if (fs.existsSync("./www.goodlifefitness.com.har")) {
+          fs.unlinkSync("./www.goodlifefitness.com.har");
+        }
         handlers.bookWorkout(
           clubId,
           workout.identifier,
@@ -71,25 +73,26 @@ function runLogin(callback = (cookies) => {}) {
   const token = fs.existsSync("./www.goodlifefitness.com.har")
     ? readLastCaptchaToken("./www.goodlifefitness.com.har")
     : undefined;
-  checkConnection(() => {
-    handlers.login(password, token, callback, (error) => {
-      if (
-        error.response.data.map.message === "Failed Google Captcha Validation"
-      ) {
-        if (typeof token === "undefined") {
-          console.log("[CAPTCHA]\tCaptcha token required for login validation");
-        } else {
-          console.log(
-            "[CAPTCHA]\tLast Captcha token in HAR file has expired ... deleting file"
-          );
-          fs.unlinkSync("./www.goodlifefitness.com.har");
-        }
-        console.log(`[CAPTCHA]\tPlease download HAR file in working directory`);
-        waitCaptcha(() => {
-          runLogin(callback);
-        });
+  if (fs.existsSync("./www.goodlifefitness.com.har")) {
+    fs.unlinkSync("./www.goodlifefitness.com.har");
+  }
+  handlers.login(password, token, callback, (error) => {
+    if (
+      error.response &&
+      error.response.data.map.message === "Failed Google Captcha Validation"
+    ) {
+      if (typeof token === "undefined") {
+        console.log("[CAPTCHA]\tCaptcha token required for login validation");
+      } else {
+        console.log(
+          "[CAPTCHA]\tLast Captcha token in HAR file has expired, new token required!"
+        );
       }
-    });
+      console.log(`[CAPTCHA]\tPlease download HAR file in working directory`);
+      waitCaptcha(() => {
+        runLogin(callback);
+      });
+    }
   });
 }
 
@@ -100,15 +103,13 @@ function runCheckup(clubIds, cookies) {
   );
   const timestamp = Date.now();
   setTimeout(runCheckup, checkupInterval, clubIds, cookies);
-  checkConnection(() => {
-    handlers.nextWorkoutsToBeBooked(clubIds, (workouts) => {
-      const shouldSchedule = workouts.some(
-        (workout) => bookableAt(workout).getTime() - timestamp < checkupInterval
-      );
-      if (shouldSchedule) {
-        workouts.forEach(({ clubId }) => scheduleNextBooking(clubId, cookies));
-      }
-    });
+  handlers.nextWorkoutsToBeBooked(clubIds, (workouts) => {
+    const shouldSchedule = workouts.some(
+      (workout) => bookableAt(workout).getTime() - timestamp < checkupInterval
+    );
+    if (shouldSchedule) {
+      workouts.forEach(({ clubId }) => scheduleNextBooking(clubId, cookies));
+    }
   });
 }
 
@@ -160,12 +161,12 @@ function main() {
   init();
   const cookies = readJson("./cookies.json").cookies;
   if (cookies.length > 0) {
-    console.log("[AUTO BOOKING] Stored login cookies found in cookies.json");
+    console.log("[AUTO BOOKING]\tStored login cookies found in cookies.json");
     runCheckup(clubIds, cookies);
   } else {
     if (typeof password === "undefined") {
       console.log(
-        "[AUTO BOOKING] Your password is not provided (end of program)"
+        "[AUTO BOOKING]\tYour password is not provided (end of program)"
       );
     } else {
       runLogin((cookies) => {
@@ -177,15 +178,3 @@ function main() {
 }
 
 main();
-
-function checkConnection(callback = () => {}) {
-  require("dns").resolve("www.goodlifefitness.com", function (err) {
-    if (err) {
-      console.log(
-        "[AUTO BOOKING]\tCannot connect to internet or www.goodlifefitness.com is currently down"
-      );
-    } else {
-      callback();
-    }
-  });
-}

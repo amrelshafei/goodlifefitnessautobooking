@@ -19,17 +19,29 @@ const nextWorkoutToBeBooked = {
     );
   },
   rejected: (error) => {
-    let errorDescription = error.response.data.map.message;
-    if (errorDescription === "API Failure Response") {
-      switch (JSON.parse(error.response.data.map.response.message).errorCode) {
-        case "CLUB_NOT_FOUND":
-          errorDescription = "club ID could not be found";
-          break;
+    if (error.response) {
+      let errorDescription = error.response.data.map.message;
+      if (errorDescription === "API Failure Response") {
+        switch (
+          JSON.parse(error.response.data.map.response.message).errorCode
+        ) {
+          case "CLUB_NOT_FOUND":
+            errorDescription = "club ID could not be found";
+            break;
+        }
       }
+      console.log(
+        `[AUTO BOOKING]\tError occured while getting next workout to be booked at one of your chosen clubs, ${errorDescription}`
+      );
+    } else if (error.request) {
+      console.log(
+        "[AUTO BOOKING]\tError occured because there is no internet connection or www.goodlifefitness.com is not reachable"
+      );
+    } else {
+      console.log(
+        `"[AUTO BOOKING]\tError occured with message: ${error.message}`
+      );
     }
-    console.log(
-      `[AUTO BOOKING]\tAn error occured while getting next workout to be booked at one of your chosen clubs, ${errorDescription}`
-    );
   },
 };
 
@@ -45,9 +57,19 @@ const authenticateMember = {
     console.log(`[LOGGING IN]\tSuccessfully logged in with ${LOGIN}`);
   },
   rejected: (error) => {
-    console.log(
-      `[LOGGING IN]\tAn error occured while logging in with ${LOGIN} (${error.response.data.map.message})`
-    );
+    if (error.response) {
+      console.log(
+        `[LOGGING IN]\tError occured while logging in with ${LOGIN} (${error.response.data.map.message})`
+      );
+    } else if (error.request) {
+      console.log(
+        "[LOGGING IN]\tError occured because there is no internet connection or www.goodlifefitness.com is not reachable"
+      );
+    } else {
+      console.log(
+        `"[LOGGING IN]\tError occured with message: ${error.message}`
+      );
+    }
   },
 };
 
@@ -56,9 +78,19 @@ const updateLastLogin = {
     console.log(`[LOGGING IN]\tLast login for ${LOGIN} updated`);
   },
   rejected: (error) => {
-    console.log(
-      `[LOGGING IN]\tAn error occured while updating last login for ${LOGIN} (${error.response.data.map.message})`
-    );
+    if (error.response) {
+      console.log(
+        `[LOGGING IN]\tError occured while updating last login for ${LOGIN} (${error.response.data.map.message})`
+      );
+    } else if (error.request) {
+      console.log(
+        "[LOGGING IN]\tError occured because there is no internet connection or www.goodlifefitness.com is not reachable"
+      );
+    } else {
+      console.log(
+        `"[LOGGING IN]\tError occured with message: ${error.message}`
+      );
+    }
   },
 };
 
@@ -86,9 +118,19 @@ const memberBookings = {
     );
   },
   rejected: (error) => {
-    console.log(
-      `[AUTO BOOKING]\tAn error occured while getting all bookings (${error.response.data.map.message})`
-    );
+    if (error.response) {
+      console.log(
+        `[AUTO BOOKING]\tError occured while getting all bookings (${error.response.data.map.message})`
+      );
+    } else if (error.request) {
+      console.log(
+        "[LOGGING IN]\tError occured because there is no internet connection or www.goodlifefitness.com is not reachable"
+      );
+    } else {
+      console.log(
+        `"[LOGGING IN]\tError occured with message: ${error.message}`
+      );
+    }
   },
 };
 
@@ -108,29 +150,41 @@ const bookWorkout = {
     );
   },
   rejected: (clubId, error) => {
-    let errorDescription = error.response.data.map.message;
-    if (errorDescription === "API Failure Response") {
-      switch (JSON.parse(error.response.data.map.response.message).errorCode) {
-        case "TOO_LATE":
-          errorDescription =
-            "too late to book workout! booking must be made before workout starts";
-          break;
-        case "PERSON_BUSY":
-          errorDescription =
-            "you already booked a workout during this time slot";
-          break;
-        case "ENTITY_NOT_FOUND":
-          errorDescription =
-            "no such time slot found! Please use the proper time slot ID";
-          break;
-        case "ILLEGAL_ARGUMENT":
-          errorDescription = "unrecognized values for club and time slot IDs";
-          break;
+    if (error.response) {
+      let errorDescription = error.response.data.map.message;
+      if (errorDescription === "API Failure Response") {
+        switch (
+          JSON.parse(error.response.data.map.response.message).errorCode
+        ) {
+          case "TOO_LATE":
+            errorDescription =
+              "too late to book workout! booking must be made before workout starts";
+            break;
+          case "PERSON_BUSY":
+            errorDescription =
+              "you already booked a workout during this time slot";
+            break;
+          case "ENTITY_NOT_FOUND":
+            errorDescription =
+              "no such time slot found! Please use the proper time slot ID";
+            break;
+          case "ILLEGAL_ARGUMENT":
+            errorDescription = "unrecognized values for club and time slot IDs";
+            break;
+        }
       }
+      console.log(
+        `[AUTO BOOKING]\tError occured while booking workout at club ${clubId}, ${errorDescription}`
+      );
+    } else if (error.request) {
+      console.log(
+        "[LOGGING IN]\tError occured because there is no internet connection or www.goodlifefitness.com is not reachable"
+      );
+    } else {
+      console.log(
+        `"[LOGGING IN]\tError occured with message: ${error.message}`
+      );
     }
-    console.log(
-      `[AUTO BOOKING]\tAn error occured while booking workout at club ${clubId}, ${errorDescription}`
-    );
   },
 };
 

@@ -51,12 +51,9 @@ function readLastCaptchaToken(harFilePath) {
       "https://www.google.com/recaptcha/api2/userverify?k=6Lfz3I8aAAAAACbq6gVz0yzf9__GZcUmqqdp8WHt"
   );
   if (entries.length > 0) {
-    return JSON.parse(
-      entries
-        .map(({ response }) => response.content.text)
-        .pop()
-        .slice(4)
-    )[1];
+    const text = entries.map(({ response }) => response.content.text).pop();
+    if (text) return JSON.parse(text.slice(4))[1];
+    else return undefined;
   } else return undefined;
 }
 
