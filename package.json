@@ -1,0 +1,35 @@
+{
+  "name": "goodlifefitnessautobooking",
+  "version": "1.0.0",
+  "description": "An auto-booking program for Goodlife Fitness members.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "goodlife",
+    "fitness",
+    "booking",
+    "hacking",
+    "node",
+    "axios"
+  ],
+  "author": "Amr ElShafei",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "form-data": "^4.0.0"
+  },
+  "bin": "index.js",
+  "pkg": {
+    "assets": [
+      "node_modules/**/*",
+      "src/**/*"
+    ],
+    "targets": [
+      "node14.4.0-linux-x64",
+      "node14.4.0-macos-x64",
+      "node14.4.0-win-x64"
+    ]
+  }
+}

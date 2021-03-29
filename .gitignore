@@ -1,0 +1,9 @@
+# Dependency directories
+node_modules/
+
+# Compiled binary
+build/
+
+# Run-time files
+cookies.json
+www.goodlifefitness.com.har
